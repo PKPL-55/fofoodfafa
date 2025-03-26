@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     # 'crispy_forms',
     'captcha',
     'main',
-    'authentication'
+    'authentication',
+    'katalog',
 ]
 
 # CRISPY_TEMPLATE_PACK = "bootstrap4"
