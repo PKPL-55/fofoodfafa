@@ -2,16 +2,14 @@
 
 {% block content %}
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 <body class="bg-gray-200">
 <div class="flex items-center justify-center min-h-screen">
     <div class="bg-white rounded-lg shadow-lg p-8 w-96">
         <h2 class="text-2xl font-semibold text-center mb-6">Login</h2>
-
-        <form method="post" class="py-6" novalidate>
+        <!-- Form login utama (tanpa langsung submit) -->
+        <form id="loginForm" method="post" class="py-6" novalidate>
             {% csrf_token %}
             <div class="mb-4">
                 <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
@@ -21,9 +19,12 @@
                 <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                 <input type="password" id="password" name="password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required>
             </div>
-            <button type="submit" class="w-full bg-gray-800 text-white py-2 rounded hover:bg-gray-700 transition">Login</button>
+            <!-- Hidden fields untuk menampung nilai captcha dari modal -->
+            <input type="hidden" id="id_captcha_0" name="captcha_0">
+            <input type="hidden" id="id_captcha_1" name="captcha_1">
+            <!-- Tombol login menjadi button type="button" untuk trigger modal -->
+            <button type="button" id="loginButton" class="w-full bg-gray-800 text-white py-2 rounded hover:bg-gray-700 transition">Login</button>
         </form>
-
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} mb-4 text-amber-900" id="message">
@@ -31,20 +32,67 @@
                 </div>
             {% endfor %}
         {% endif %}
-        
         <p class="mt-3 text-center">Belum punya akun? <a href="{% url 'authentication:register' %}" class="text-blue-500 hover:underline">Register disini</a></p>
     </div>
 </div>
 
+<!-- Modal CAPTCHA untuk Login -->
+<div id="captchaModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg p-8 w-1/3">
+        <h3 class="text-2xl font-semibold mb-6 text-center">Verifikasi Captcha</h3>
+        <div id="captcha_modal_container" class="mb-6 text-center">
+            <!-- Perbesar gambar captcha dengan kelas misalnya "w-64 h-auto" -->
+            <img id="modal_captcha_img" src="{{ captcha_image_url }}" alt="CAPTCHA" class="mx-auto w-64 h-auto">
+            <input type="hidden" id="modal_captcha_0" value="{{ captcha_key }}">
+            <input type="text" id="modal_captcha_1" placeholder="Masukkan Captcha" class="mt-4 block w-full border-gray-300 rounded-md p-2 text-center">
+            <button type="button" id="modal_refresh" class="mt-4 text-blue-600">Refresh Captcha</button>
+        </div>
+        <div class="flex justify-end">
+            <button type="button" id="cancelCaptcha" class="mr-2 px-4 py-2 bg-gray-400 text-white rounded">Batal</button>
+            <button type="button" id="verifyCaptcha" class="px-4 py-2 bg-blue-600 text-white rounded">Verifikasi</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Hide the message after 5 seconds
+$(document).ready(function(){
+    // Tampilkan modal captcha saat tombol login diklik
+    $("#loginButton").click(function(e){
+        e.preventDefault();
+        $("#captchaModal").removeClass("hidden");
+    });
+    // Tombol batal pada modal
+    $("#cancelCaptcha").click(function(){
+        $("#captchaModal").addClass("hidden");
+    });
+    // Tombol refresh captcha pada modal
+    $("#modal_refresh").click(function(){
+        $.getJSON("{% url 'authentication:refresh_captcha' %}", function(data) {
+            $("#modal_captcha_0").val(data.key);
+            $("#modal_captcha_img").attr("src", data.image_url);
+        });
+    });
+    // Verifikasi captcha: salin nilai ke hidden field dan submit form
+    $("#verifyCaptcha").click(function(){
+        var captchaKey = $("#modal_captcha_0").val();
+        var captchaResponse = $("#modal_captcha_1").val();
+        if(!captchaResponse){
+            alert("Silakan isi captcha.");
+            return;
+        }
+        $("#id_captcha_0").val(captchaKey);
+        $("#id_captcha_1").val(captchaResponse);
+        $("#captchaModal").addClass("hidden");
+        $("#loginForm").submit();
+    });
+    // Hide pesan setelah 5 detik (jika ada)
     setTimeout(function() {
         var message = document.getElementById('message');
         if (message) {
             message.style.display = 'none';
         }
     }, 5000);
+});
 </script>
 </body>
-
 {% endblock content %}
