@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Pesanan Anda</h1>
+    
+    {% if orders %}
+        {% for order in orders %}
+        <div class="bg-white shadow-md rounded-lg mb-4 overflow-hidden">
+            <div class="p-4 bg-gray-100">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-semibold">Pesanan #{{ order.id }}</span>
+                </div>
+            </div>
+            
+            <table class="w-full">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="p-3 text-left">Produk</th>
+                        <th class="p-3 text-center">Jumlah</th>
+                        <th class="p-3 text-center">Harga Satuan</th>
+                        <th class="p-3 text-center">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cart_item in order.cart_items.all %}
+                    <tr class="border-b">
+                        <td class="p-3">{{ cart_item.product.nama }}</td>
+                        <td class="p-3 text-center">{{ cart_item.quantity }}</td>
+                        <td class="p-3 text-center">Rp {{ cart_item.product.harga|floatformat:2 }}</td>
+                        <td class="p-3 text-center">Rp {{ cart_item.get_total_price|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <div class="p-6 bg-gray-100 flex flex-col items-end">
+                <div class="flex flex-col items-end mb-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl font-bold">Total Keseluruhan:</span>
+                        <span class="text-xl text-green-600">Rp {{ order.total_price|floatformat:2 }}</span>
+                    </div>
+                    <span class="text-sm text-gray-600">Status: {{ order.get_status_display }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center p-6 bg-gray-100 rounded-lg">
+            <p class="text-xl">Anda belum memiliki pesanan</p>
+            <a href="{% url 'katalog:main_view' %}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded">
+                Mulai Belanja
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
