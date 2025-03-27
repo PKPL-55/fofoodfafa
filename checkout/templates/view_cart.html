@@ -59,7 +59,7 @@
                         <span class="text-xl text-green-600">Rp {{ total_price|floatformat:2 }}</span>
                     </div>
                 </div>
-                <button class="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600">
+                <button onclick="createOrder()" class="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600">
                     Lanjutkan ke Pembayaran
                 </button>
             </div>
@@ -176,6 +176,33 @@ function applyDiscount() {
 
     // TODO: Implementasi diskon
     document.getElementById('discountModal').classList.add('hidden');
+}
+
+function createOrder() {
+    // Tampilkan konfirmasi dialog
+    if (confirm('Apakah Anda yakin ingin melanjutkan ke pembayaran?')) {
+        // Kirim permintaan AJAX untuk membuat order
+        fetch('/checkout/create_order/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Redirect ke halaman view order jika berhasil
+                window.location.href = '/checkout/view_order/';
+            } else {
+                // Tangani kesalahan
+                alert('Gagal membuat pesanan. Silakan coba lagi.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan. Silakan coba lagi.');
+        });
+    }
 }
 
 // Function to get CSRF token from cookies
