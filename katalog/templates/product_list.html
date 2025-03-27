@@ -232,7 +232,8 @@
 
     <div class="product-grid" id="productGrid">
         {% for product in products %}
-        <div class="product-card" data-category="{{ product.fields.kategori }}" data-price="{{ product.fields.harga }}">
+        <a href="{% url 'katalog:detail_product' product.pk %}" class="product-card-link">
+            <div class="product-card" data-category="{{ product.fields.kategori }}" data-price="{{ product.fields.harga }}">
                 {% if product.fields.img_link %}
                     <img src="{{ product.fields.img_link }}" alt="Gambar {{ product.fields.nama }}">
                 {% else %}
@@ -245,9 +246,10 @@
                     <p class="restaurant">Deskripsi: {{ product.fields.deskripsi }}</p>
                     <p class="location">Quantitas: {{ product.fields.quantity }}</p>
                 </div>
-        </div>
+            </div>
+        </a>
         {% endfor %}
-    </div>
+    </div>    
 
     <script>
         const bookmarkedProducts = new Set('{{ user_bookmarks|safe }}');

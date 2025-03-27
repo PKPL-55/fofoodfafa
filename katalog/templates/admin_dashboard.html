@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Dashboard Admin Produk | Fofoodfafa </title>
+{% endblock meta %}
+
+{% block content %}
+<main class="px-4 md:px-14 lg:px-24 xl:px-36 py-5 md:py-8 w-full mx-auto">
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-2xl font-semibold mb-6">Tambah/Edit Produk</h2>
+        
+        <form method="POST" class="mb-8">
+            {% csrf_token %}
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="nama">
+                        Nama Produk
+                    </label>
+                    <input type="text" name="nama" id="nama" required
+                        value="{{ edit_product.nama|default:'' }}" 
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="kategori">
+                        Kategori
+                    </label>
+                    <input type="text" name="kategori" id="kategori" required
+                        value="{{ edit_product.kategori|default:'' }}"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="harga">
+                        Harga
+                    </label>
+                    <input type="number" step="0.01" name="harga" id="harga" required
+                        value="{{ edit_product.harga|default:'' }}"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="quantity">
+                        Stok
+                    </label>
+                    <input type="number" name="quantity" id="quantity" required
+                        value="{{ edit_product.quantity|default:'' }}"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="deskripsi">
+                        Deskripsi
+                    </label>
+                    <textarea name="deskripsi" id="deskripsi"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ edit_product.deskripsi|default:'' }}</textarea>
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="img_link">
+                        Link Gambar
+                    </label>
+                    <input type="url" name="img_link" id="img_link"
+                        value="{{ edit_product.img_link|default:'' }}"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between mt-6">
+                <button type="submit" 
+                    class="bg-[#4f9da6] hover:bg-[#3b747a] text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    {% if edit_product %}
+                        Update Produk
+                    {% else %}
+                        Tambah Produk
+                    {% endif %}
+
+                </button>
+                {% if edit_product %}
+                <a href="{% url 'katalog:admin_dashboard' %}" 
+                   class="inline-block align-baseline font-bold text-sm text-red-500 hover:text-red-800">
+                    Batal
+                </a>
+                {% endif %}
+            </div>
+        </form>
+
+        <h3 class="text-xl font-semibold mb-4">Daftar Produk</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full table-auto">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="px-4 py-2 text-left">No</th>
+                        <th class="px-4 py-2 text-left">Nama</th>
+                        <th class="px-4 py-2 text-left">Kategori</th>
+                        <th class="px-4 py-2 text-right">Harga</th>
+                        <th class="px-4 py-2 text-right">Stok</th>
+                        <th class="px-4 py-2 text-center">link gambar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr class="border-b hover:bg-gray-100 {% cycle 'bg-white' 'bg-gray-50' %}">
+                        <td class="px-4 py-2">{{ forloop.counter }}</td>
+                        <td class="px-4 py-2">{{ product.nama }}</td>
+                        <td class="px-4 py-2">{{ product.kategori }}</td>
+                        <td class="px-4 py-2 text-right">Rp {{ product.harga|floatformat:2 }}</td>
+                        <td class="px-4 py-2 text-right">{{ product.quantity }}</td>
+                        <td class="px-4 py-2 text-right">{{ product.img_link }}</td>
+
+                        <td class="px-4 py-2 text-center">
+                            <div class="flex justify-center space-x-2">
+                                <a href="{% url 'katalog:admin_dashboard' %}?edit={{ product.id }}" 
+                                   class="text-blue-500 hover:text-blue-700">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'katalog:delete_product' product.id %}" 
+                                   onclick="return confirm('Apakah Anda yakin ingin menghapus produk ini?');"
+                                   class="text-red-500 hover:text-red-700">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-gray-500">
+                            Tidak ada produk
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+{% endblock content %}

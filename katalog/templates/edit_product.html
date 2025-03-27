@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Edit Produk | Rasa Palembang</title>
+{% endblock meta %}
+
+{% block content %}
+<main class="px-4 md:px-14 lg:px-24 xl:px-36 py-5 md:py-8 w-full mx-auto">
+    <h2 class="text-xl font-semibold">Edit Produk</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="grid grid-cols-2 sm:gap-x-4 w-full">
+            <div class="mt-4 col-span-2 sm:col-span-1">
+                <label class="text-sm pl-2" for="nama">Nama Produk</label>
+                <input type="text" name="nama" maxlength="255" required id="nama" placeholder="Masukkan nama produk"
+                    class="w-full mt-2 bg-gray-100 rounded-lg px-4 py-3.5 placeholder:text-[#808080] focus-visible:outline-[#4f9da6]"
+                    value="{{ product.nama }}">
+            </div>
+            <div class="mt-4 col-span-2 sm:col-span-1">
+                <label class="text-sm pl-2" for="kategori">Kategori</label>
+                <input type="text" name="kategori" maxlength="100" required id="kategori" placeholder="Masukkan kategori produk"
+                    class="w-full mt-2 bg-gray-100 rounded-lg px-4 py-3.5 placeholder:text-[#808080] focus-visible:outline-[#4f9da6]"
+                    value="{{ product.kategori }}">
+            </div>
+        </div>
+        <div class="grid grid-cols-2 sm:gap-x-4 w-full">
+            <div class="mt-4 col-span-2 sm:col-span-1">
+                <label class="text-sm pl-2" for="harga">Harga</label>
+                <input type="number" step="0.01" name="harga" required id="harga" placeholder="Masukkan harga produk"
+                    class="w-full mt-2 bg-gray-100 rounded-lg px-4 py-3.5 placeholder:text-[#808080] focus-visible:outline-[#4f9da6]"
+                    value="{{ product.harga }}">
+            </div>
+            <div class="mt-4 col-span-2 sm:col-span-1">
+                <label class="text-sm pl-2" for="quantity">Jumlah</label>
+                <input type="number" name="quantity" required id="quantity" placeholder="Masukkan jumlah produk"
+                    class="w-full mt-2 bg-gray-100 rounded-lg px-4 py-3.5 placeholder:text-[#808080] focus-visible:outline-[#4f9da6]"
+                    value="{{ product.quantity }}">
+            </div>
+        </div>
+        <div class="mt-4">
+            <label class="text-sm pl-2" for="deskripsi">Deskripsi</label>
+            <textarea name="deskripsi" id="deskripsi" placeholder="Masukkan deskripsi produk (opsional)"
+                class="w-full resize-none h-36 mt-2 bg-gray-100 rounded-lg px-4 py-3.5 placeholder:text-[#808080] focus-visible:outline-[#4f9da6]">{{ product.deskripsi }}</textarea>
+        </div>
+        <div class="mt-4">
+            <label class="text-sm pl-2" for="img_link">Link Gambar</label>
+            <input type="url" name="img_link" id="img_link" placeholder="Masukkan URL gambar (opsional)"
+                class="w-full mt-2 bg-gray-100 rounded-lg px-4 py-3.5 placeholder:text-[#808080] focus-visible:outline-[#4f9da6]"
+                value="{{ product.img_link }}">
+        </div>
+        <div class="flex items-center">
+            <div class="w-full">
+                <button
+                    class="mt-8 shadow hover:shadow bg-[#4f9da6] hover:bg-[#3b747a] transition focus:shadow-outline focus:bg-[#3b747a] focus:outline-none text-white font-semibold py-2 px-4 rounded-lg"
+                    type="submit">
+                    <i class="fa-regular fa-floppy-disk mr-2"></i>
+                    Simpan
+                </button>
+            </div>
+            <div class="mt-8 whitespace-nowrap text-sm font-medium">
+                <a href="{% url 'produk:hapus_produk' product.id %}"
+                   class="text-[#d04848] hover:underline cursor-pointer">Hapus Produk</a>
+            </div>
+        </div>
+    </form>
+</main>
+{% endblock content %}
