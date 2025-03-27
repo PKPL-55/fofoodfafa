@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'katalog',
     'userprofile',
     'checkout',
+    'diskon',
+    
 ]
 
 # CRISPY_TEMPLATE_PACK = "bootstrap4"
@@ -117,7 +119,7 @@ AUTH_USER_MODEL = 'authentication.User'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jakarta'
 
 USE_I18N = True
 

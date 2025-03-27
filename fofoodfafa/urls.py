@@ -24,5 +24,6 @@ urlpatterns = [
     path('auth', include('authentication.urls')),
     path('katalog/', include('katalog.urls')),
     path('checkout/', include('checkout.urls')),
+    path('diskon/', include('diskon.urls') ),
     path('profile/', include('userprofile.urls', namespace='userprofile')),
 ]

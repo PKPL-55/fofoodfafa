@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-white p-8 rounded shadow max-w-5xl mx-auto">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Buat Voucher Diskon</h2>
+
+  <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% csrf_token %}
+
+    <div>
+      <label class="block text-gray-800 font-medium mb-1">Kode Voucher</label>
+      <input type="text" name="code" required class="w-full px-4 py-2 border border-gray-600 rounded" placeholder="Masukkan kode voucher">
+    </div>
+
+    <div>
+      <label class="block text-gray-800 font-medium mb-1">Persentase Diskon (%)</label>
+      <input type="number" name="discount_percentage" min="1" max="100" required class="w-full px-4 py-2 border border-gray-600 rounded" placeholder="Contoh: 10">
+    </div>
+
+    <div class="md:col-span-2">
+      <label class="block text-gray-800 font-medium mb-1">Valid Sampai</label>
+      <input type="datetime-local" name="valid_until" required class="w-full px-4 py-2 border border-gray-600 rounded">
+    </div>
+
+    <div class="md:col-span-2">
+      <button type="submit" class="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-800 w-full">
+        Buat Voucher
+      </button>
+    </div>
+  </form>
+</div>
+
+{% if active_vouchers %}
+<div class="bg-white p-6 rounded shadow max-w-5xl mx-auto mt-10">
+  <h3 class="text-xl font-bold text-gray-800 mb-4">Voucher Aktif Saat Ini</h3>
+  <div class="space-y-4">
+    {% for voucher in active_vouchers %}
+      <div class="p-4 border border-gray-300 rounded bg-gray-50">
+        <p class="text-gray-800 font-semibold">{{ voucher.code }}</p>
+        <p class="text-gray-600">Diskon: {{ voucher.discount_percentage }}%</p>
+        <p class="text-gray-600">Berlaku: {{ voucher.valid_from|date:"d M Y H:i" }} - {{ voucher.valid_until|date:"d M Y H:i" }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+<div class="bg-white p-6 rounded shadow max-w-5xl mx-auto mt-10 text-gray-600 text-center">
+  Belum ada voucher aktif.
+</div>
+{% endif %}
+{% endblock %}

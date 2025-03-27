@@ -13,6 +13,14 @@
       <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
+  <script>
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (!document.cookie.includes('user_timezone')) {
+      document.cookie = "user_timezone=" + timezone + ";path=/";
+      location.reload();
+    }
+  </script>
+  
   <body>
     {% include "navbar.html" %}
     <main class="py-10">
