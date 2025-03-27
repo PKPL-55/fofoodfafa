@@ -34,7 +34,7 @@ def user_login(request):
             user = form.get_user()
             print(user)
             login(request, user)
-            print(request)
+            print(form)
             messages.success(request, "Login berhasil!")
             return redirect('main:show_main')
         else:
@@ -56,3 +56,15 @@ def refresh_captcha(request):
         'image_url': new_image_url,
     }
     return JsonResponse(data)
+
+def validate_captcha(request):
+    key = request.GET.get('key')
+    response = request.GET.get('response')
+    valid = False
+    try:
+        captcha_obj = CaptchaStore.objects.get(hashkey=key)
+        if response.strip().lower() == captcha_obj.response.strip().lower():
+            valid = True
+    except CaptchaStore.DoesNotExist:
+        valid = False
+    return JsonResponse({'valid': valid})

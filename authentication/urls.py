@@ -11,4 +11,5 @@ urlpatterns = [
     path('login/', user_login, name='login'),
     path('logout/', user_logout, name='logout'),
     path('refresh-captcha/', refresh_captcha, name='refresh_captcha'),
+    path('validate-captcha/', validate_captcha, name='validate_captcha'),
 ]
