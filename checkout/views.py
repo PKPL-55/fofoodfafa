@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.db import transaction
+from .models import Cart, Order
 import json
 
 from .models import Cart
@@ -83,3 +85,43 @@ def remove_from_cart(request, cart_item_id):
         return JsonResponse({'success': True})
     except Cart.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Cart item not found'})
+    
+@login_required
+def create_order(request):
+    if request.method == 'POST':
+        # Start a database transaction to ensure data consistency
+        with transaction.atomic():
+            # Get all cart items for the current user
+            cart_items = Cart.objects.filter(user=request.user)
+            
+            # Calculate total price
+            total_price = sum(item.get_total_price() for item in cart_items)
+            
+            # Create new order
+            order = Order.objects.create(
+                user=request.user,
+                total_price=total_price,
+                status='Dikonfirmasi'
+            )
+            
+            # Add cart items to the order
+            order.cart_items.set(cart_items)
+            
+            # Clear the user's cart
+            cart_items.delete()
+        
+        # Redirect to order view
+        return redirect('checkout:view_order')
+    
+    # If not a POST request, redirect to cart
+    return redirect('checkout:view_cart')
+
+@login_required
+def view_order(request):
+    # Get all orders for the current user
+    orders = Order.objects.filter(user=request.user).prefetch_related('cart_items__product')
+    
+    context = {
+        'orders': orders
+    }
+    return render(request, 'view_order.html', context)
