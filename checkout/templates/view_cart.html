@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Keranjang Anda</h1>
+    
+    {% if cart_items %}
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="p-3 text-left">Produk</th>
+                        <th class="p-3 text-center">Jumlah</th>
+                        <th class="p-3 text-center">Harga Satuan</th>
+                        <th class="p-3 text-center">Total</th>
+                        <th class="p-3 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr class="border-b">
+                        <td class="p-3">
+                            <span>{{ item.product.nama }}</span>
+                        </td>
+                        <td class="p-3 text-center">
+                            <div class="flex justify-center items-center">
+                                <button onclick="updateQuantity({{ item.id }}, -1)" 
+                                        class="bg-gray-200 px-2 py-1 rounded-l">-</button>
+                                <input type="number" 
+                                       id="quantity-{{ item.id }}" 
+                                       value="{{ item.quantity }}" 
+                                       min="1" 
+                                       max="{{ item.product.quantity }}" 
+                                       class="w-16 text-center border">
+                                <button onclick="updateQuantity({{ item.id }}, 1)" 
+                                        class="bg-gray-200 px-2 py-1 rounded-r">+</button>
+                            </div>
+                        </td>
+                        <td class="p-3 text-center">Rp {{ item.product.harga|floatformat:2 }}</td>
+                        <td class="p-3 text-center">Rp {{ item.get_total_price|floatformat:2 }}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="removeFromCart({{ item.id }})" 
+                                    class="bg-red-500 text-white px-3 py-1 rounded">
+                                Hapus
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <div class="p-6 bg-gray-100 flex justify-between items-center">
+                <div>
+                    <span class="text-xl font-bold">Total Keseluruhan:</span>
+                    <span class="text-xl text-green-600">Rp {{ total_price|floatformat:2 }}</span>
+                </div>
+                <button class="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600">
+                    Lanjutkan ke Pembayaran
+                </button>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center p-6 bg-gray-100 rounded-lg">
+            <p class="text-xl">Keranjang Anda kosong</p>
+            <a href="{% url 'katalog:main_view' %}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded">
+                Mulai Belanja
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function updateQuantity(cartItemId, change) {
+    const quantityInput = document.getElementById(`quantity-${cartItemId}`);
+    let currentValue = parseInt(quantityInput.value);
+    let newValue = currentValue + change;
+    
+    // Ensure value is at least 1
+    newValue = Math.max(1, newValue);
+    
+    // Send AJAX request to update cart
+    fetch(`/checkout/update_cart/${cartItemId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ quantity: newValue })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            quantityInput.value = newValue;
+            // Update total price on the page
+            location.reload();
+        }
+    });
+}
+
+function removeFromCart(cartItemId) {
+    fetch(`/checkout/remove_cart/${cartItemId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+// Function to get CSRF token from cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

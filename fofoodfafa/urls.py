@@ -23,4 +23,5 @@ urlpatterns = [
     path('captcha/', include('captcha.urls')),
     path('auth', include('authentication.urls')),
     path('katalog/', include('katalog.urls')),
+    path('checkout/', include('checkout.urls')),
 ]

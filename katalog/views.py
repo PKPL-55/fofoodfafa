@@ -74,7 +74,7 @@ def admin_dashboard(request):
             )
             messages.success(request, f'Produk {product.nama} berhasil ditambahkan!')
         
-        return redirect('produk:admin_dashboard')
+        return redirect('katalog:admin_dashboard')
 
     # Ambil semua produk
     products = Product.objects.all()
