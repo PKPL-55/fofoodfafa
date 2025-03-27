@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'main',
     'authentication',
     'katalog',
+    'userprofile'
 ]
 
 # CRISPY_TEMPLATE_PACK = "bootstrap4"
