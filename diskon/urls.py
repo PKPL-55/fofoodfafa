@@ -4,5 +4,5 @@ from .views import create_voucher
 app_name = 'diskon'
 
 urlpatterns = [
-    path('create_voucher/', create_voucher, name='create_voucher'),
+    path('create/', create_voucher, name='create_voucher'),
 ]
